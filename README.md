@@ -1,70 +1,59 @@
-# Getting Started with Create React App
+# useEffect api call react functional component
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+jsonplaceholder api posts data:
 
-## Available Scripts
+```json
+[
+  {
+  "userId": 1,
+  "id": 1,
+  "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+  "body": "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto"
+  }, {}, {}]
+```
 
-In the project directory, you can run:
+When api call is called for the following code:
+```js
 
-### `yarn start`
+  useEffect(() => {
+    const postUrl = 'https://jsonplaceholder.typicode.com/posts';
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+    fetch(postUrl)
+    .then(res => res.json())
+    .then(resultJson => {
+      setPosts(resultJson);
+    }) // no optional dependcy array has been passed which mean useEffect will get called again and again since setPosts will update state which trigger useEffect again and again! 
+  })
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+  useEffect(() => {
+    const postUrl = 'https://jsonplaceholder.typicode.com/posts';
 
-### `yarn test`
+    fetch(postUrl)
+    .then(res => res.json())
+    .then(resultJson => {
+      setPosts(resultJson);
+    }, [posts])
+  })
+```
+1. api call is made (first time when app component is loaded) when the component is mounted
+2. Optional array dependecy is updated.  For this case, when anything [posts] state is changed (`setPosts(resultJson)`), the api call is made (aka, call useEffect again!)  this is going to make the infinite loop again since `setPosts` will trigger which cause the update in posts state.  
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Solution: pass the empty array as the optional array dependency. `[]`
 
-### `yarn build`
+```js
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+  useEffect(() => {
+    const postUrl = 'https://jsonplaceholder.typicode.com/posts';
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+    fetch(postUrl)
+    .then(res => res.json())
+    .then(resultJson => {
+      setPosts(resultJson);
+    }, [])
+  })
+```
+Passing no dependency inside of dependency array means useEffect has nothing to be called for when any state gets updated in my app. therefore it will only call the api call once!  Since useEffect has no dependency.  Only time useEffect fires is componentDidMount.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+* call out: `useEffect()` is use for 2 different purposes: 
+  1. componentDidMount: 
+  2. componentDidUpdate:
