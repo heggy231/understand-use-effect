@@ -1,5 +1,8 @@
 # useEffect api call react functional component
 
+- useEffect replaces ComponentDidMount and ComponentDidUpdate.  Once the component is mounted, it will run the effect.
+
+
 jsonplaceholder api posts data:
 
 ```json
@@ -16,14 +19,18 @@ When api call is called for the following code:
 ```js
 
   useEffect(() => {
+
     const postUrl = 'https://jsonplaceholder.typicode.com/posts';
 
     fetch(postUrl)
     .then(res => res.json())
     .then(resultJson => {
       setPosts(resultJson);
-    }) // no optional dependcy array has been passed which mean useEffect will get called again and again since setPosts will update state which trigger useEffect again and again! 
-  })
+    })
+
+  }) // no optional dependency array has been passed which mean useEffect will get called again and again since setPosts will update state which trigger useEffect again and again! 
+
+// *************************************************
 
   useEffect(() => {
     const postUrl = 'https://jsonplaceholder.typicode.com/posts';
@@ -32,11 +39,15 @@ When api call is called for the following code:
     .then(res => res.json())
     .then(resultJson => {
       setPosts(resultJson);
-    }, [posts])
-  })
+    })
+
+  }, [posts])
 ```
+
+* When does UseEffect get called?
+
 1. api call is made (first time when app component is loaded) when the component is mounted
-2. Optional array dependecy is updated.  For this case, when anything [posts] state is changed (`setPosts(resultJson)`), the api call is made (aka, call useEffect again!)  this is going to make the infinite loop again since `setPosts` will trigger which cause the update in posts state.  
+2. Run useEffect whenever Optional array dependency is updated.  For this case, when anything [posts] state is changed (`setPosts(resultJson)`), the api call is made (aka, call useEffect again!)  this is going to make the infinite loop again since `setPosts` will trigger which cause the update in posts state.  
 
 - Solution: pass the empty array as the optional array dependency. `[]`
 
@@ -49,8 +60,8 @@ When api call is called for the following code:
     .then(res => res.json())
     .then(resultJson => {
       setPosts(resultJson);
-    }, [])
-  })
+    })
+  }, []) // pass empty array as optional array dependency.
 ```
 Passing no dependency inside of dependency array means useEffect has nothing to be called for when any state gets updated in my app. therefore it will only call the api call once!  Since useEffect has no dependency.  Only time useEffect fires is componentDidMount.
 

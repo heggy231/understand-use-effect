@@ -6,14 +6,16 @@ function App() {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
+
     const postUrl = 'https://jsonplaceholder.typicode.com/posts';
 
     fetch(postUrl)
     .then(res => res.json())
     .then(resultJson => {
       setPosts(resultJson);
-    }, [])
-  })
+    })
+    
+  }, [])
 
   const handleIncrement = () => setCounter(counter + 1);
 
